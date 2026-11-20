@@ -1,0 +1,22 @@
+{
+  "model": "claude-sonnet-5-5",
+  "maxTokens": 4000,
+  "maxImagesPerCall": 20,
+  "maxPagesStudent": 12,
+  "maxPagesKey": 20,
+  "maxPagesQuestionPaper": 15,
+  "imageMaxPx": 1600,
+  "allowedExtensions": [
+    "pdf",
+    "png",
+    "jpg",
+    "jpeg",
+    "webp",
+    "txt",
+    "md"
+  ],
+  "engine": "ollama",
+  "ollamaUrl": "http://localhost:11434",
+  "ollamaModel": "qwen2.5vl:7b",
+  "numCtx": 16384
+}

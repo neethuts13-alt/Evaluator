@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>AI Assignment Evaluator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css"></head><body>
+<div class="wrap">
+<h1>📝 AI Assignment Evaluator</h1>
+<details class="card" open><summary><b>Settings</b></summary>
+ <label for="engine">Marking engine</label>
+ <select id="engine">
+  <option value="ollama">Local AI on this computer (Ollama) – works offline</option>
+  <option value="keyword">Offline keyword marking – no AI at all</option>
+  <option value="claude">Claude (cloud, needs internet and API key)</option>
+ </select>
+ <div id="oll">
+  <label for="ourl">Ollama address</label><input type="text" id="ourl">
+  <label for="omodel">Local model</label><input type="text" id="omodel">
+  <p class="note">Use a vision model (e.g. qwen2.5vl:7b) for scanned or handwritten answers, or a text model (e.g. llama3.1:8b) for typed PDFs and text files. See README.md.</p>
+ </div>
+ <div id="kw"><p class="note">Keyword marking reads typed PDFs/text only. Write the answer key (Tab 2) as lines like:<br><code>Q1 | 5 | photosynthesis, chlorophyll/green pigment, sunlight</code><br>Format: question | max marks | key points separated by commas (use / for alternative words). See sample-answer-key.txt.</p></div>
+ <div id="cld">
+  <label for="apikey">Anthropic API key</label><input type="password" id="apikey" placeholder="sk-ant-…" autocomplete="off">
+  <label for="model">Claude model</label><input type="text" id="model">
+ </div>
+</details>
+
+<div class="tabs" id="tabs">
+ <button class="tab on" data-t="qp">1 · Question paper</button>
+ <button class="tab" data-t="key">2 · Answer key &amp; scheme</button>
+ <button class="tab" data-t="drive">3 · Student answers</button>
+ <button class="tab" data-t="eval">4 · Evaluate</button></div>
+
+<div class="panel on" id="qp">
+ <div class="drop" data-for="qp">Drop the question paper here or click to browse<br><small>PDF, image or text</small></div>
+ <input type="file" id="f_qp" hidden multiple accept=".pdf,image/*,.txt,.md"><ul class="files" id="l_qp"></ul></div>
+
+<div class="panel" id="key">
+ <div class="drop" data-for="key">Drop the answer key and marking scheme here or click to browse<br><small>PDF, image or text (multiple allowed)</small></div>
+ <input type="file" id="f_key" hidden multiple accept=".pdf,image/*,.txt,.md"><ul class="files" id="l_key"></ul></div>
+
+<div class="panel" id="drive">
+ <label for="gl"><b>Google Drive folder link</b></label>
+ <input type="text" id="gl" placeholder="https://drive.google.com/drive/folders/…">
+ <label for="gk">Google API key (Drive API enabled)</label>
+ <input type="password" id="gk" placeholder="AIza…" autocomplete="off">
+ <p class="note"><b>Needs internet.</b> For fully offline use, skip this and upload the files or a .zip below. The folder must be shared as “Anyone with the link can view”. Google Docs in the folder are converted to PDF automatically. See README.md for how to get a Google API key.</p>
+ <button class="p" id="fetchDrive">Fetch files from Drive</button> <span id="driveMsg" class="note"></span>
+ <h3>Or upload manually</h3>
+ <div class="drop" data-for="ans">Drop student answer files or one .zip of the folder here, or click to browse<br><small>PDF, image or text · one file per student</small></div>
+ <input type="file" id="f_ans" hidden multiple accept=".pdf,image/*,.txt,.md,.zip"><ul class="files" id="l_ans"></ul></div>
+
+<div class="panel" id="eval">
+ <p class="note" id="status"></p>
+ <button class="p" id="go">Evaluate all answer files</button>
+ <div class="bar"><i id="pb"></i></div><div id="log" class="note"></div>
+ <div class="scroll"><table id="res" hidden><thead><tr><th>Student</th><th>Marks</th><th>Out of</th><th>%</th><th>Summary</th></tr></thead><tbody></tbody></table></div>
+ <div class="row"><button class="s" id="dl1" hidden>Download results (Excel)</button><button class="s" id="dl2" hidden>Download remarks (Excel)</button></div>
+ <p class="note">AI marking can differ from a teacher’s. Spot-check a few students against the remarks.</p></div>
+</div>
+<script>
+/* Loads libraries from ./libs when present (offline), otherwise from the CDN, then starts app.js */
+var CDN='https://cdnjs.cloudflare.com/ajax/libs/';
+var L=[['libs/xlsx.full.min.js',CDN+'xlsx/0.18.5/xlsx.full.min.js'],['libs/jszip.min.js',CDN+'jszip/3.10.1/jszip.min.js'],
+ ['libs/pdf.min.js',CDN+'pdf.js/3.11.174/pdf.min.js','libs/pdf.worker.min.js',CDN+'pdf.js/3.11.174/pdf.worker.min.js'],['app.js']];
+function ld(src,ok,bad){var s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)}
+(function next(i){if(i>=L.length)return;var e=L[i];
+ ld(e[0],function(){if(e[2])window.PDFW=e[2];next(i+1)},function(){
+  if(!e[1])return;
+  ld(e[1],function(){if(e[3])window.PDFW=e[3];next(i+1)},function(){
+   document.body.insertAdjacentHTML('afterbegin','<p class="bad">Could not load '+e[0]+'. Run get-libs (see README.md, offline setup).</p>');next(i+1)})})})(0);
+</script>
+</body></html>
